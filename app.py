@@ -128,6 +128,12 @@ if st.sidebar.button("🚪 Logout"):
 
 # ---------------- TITLE ---------------- #
 
+st.set_page_config(
+    page_title="AI Cyber Threat Detection",
+    page_icon="🛡️",
+    layout="wide"
+)
+
 st.title("AI Cyber Threat Detection System")
 
 st.write("Phishing + Malware Detection Using AI")
