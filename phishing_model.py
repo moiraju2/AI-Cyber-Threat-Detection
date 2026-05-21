@@ -10,12 +10,36 @@ df = pd.read_csv("datasets/phishing.csv")
 # ---------------- FEATURES ---------------- #
 
 X = df[[
-    'URLURL_Length',
-    'having_At_Symbol',
     'having_IPhaving_IP_Address',
+    'URLURL_Length',
     'Shortining_Service',
+    'having_At_Symbol',
+    'double_slash_redirecting',
     'Prefix_Suffix',
-    'SSLfinal_State'
+    'having_Sub_Domain',
+    'SSLfinal_State',
+    'Domain_registeration_length',
+    'Favicon',
+    'port',
+    'HTTPS_token',
+    'Request_URL',
+    'URL_of_Anchor',
+    'Links_in_tags',
+    'SFH',
+    'Submitting_to_email',
+    'Abnormal_URL',
+    'Redirect',
+    'on_mouseover',
+    'RightClick',
+    'popUpWidnow',
+    'Iframe',
+    'age_of_domain',
+    'DNSRecord',
+    'web_traffic',
+    'Page_Rank',
+    'Google_Index',
+    'Links_pointing_to_page',
+    'Statistical_report'
 ]]
 
 y = df['Result']
@@ -67,23 +91,71 @@ def extract_features(url):
     ssl_state = 1 if url.startswith("https") else 0
 
     return pd.DataFrame(
-        [[
-            url_length,
-            has_at,
-            has_ip,
-            shortener,
-            prefix_suffix,
-            ssl_state
-        ]],
-        columns=[
-            'URLURL_Length',
-            'having_At_Symbol',
-            'having_IPhaving_IP_Address',
-            'Shortining_Service',
-            'Prefix_Suffix',
-            'SSLfinal_State'
-        ]
-    )
+    [[
+        has_ip,
+        url_length,
+        shortener,
+        has_at,
+        0,
+        prefix_suffix,
+        0,
+        ssl_state,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ]],
+    columns=[
+        'having_IPhaving_IP_Address',
+        'URLURL_Length',
+        'Shortining_Service',
+        'having_At_Symbol',
+        'double_slash_redirecting',
+        'Prefix_Suffix',
+        'having_Sub_Domain',
+        'SSLfinal_State',
+        'Domain_registeration_length',
+        'Favicon',
+        'port',
+        'HTTPS_token',
+        'Request_URL',
+        'URL_of_Anchor',
+        'Links_in_tags',
+        'SFH',
+        'Submitting_to_email',
+        'Abnormal_URL',
+        'Redirect',
+        'on_mouseover',
+        'RightClick',
+        'popUpWidnow',
+        'Iframe',
+        'age_of_domain',
+        'DNSRecord',
+        'web_traffic',
+        'Page_Rank',
+        'Google_Index',
+        'Links_pointing_to_page',
+        'Statistical_report'
+    ]
+)
 
 # ---------------- URL PREDICTION ---------------- #
 def predict_url(url):
