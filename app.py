@@ -44,8 +44,17 @@ st.markdown("""
 
 # ---------------- LOGIN SYSTEM ---------------- #
 
-USERNAME = "admin"
-PASSWORD = "1234"
+USERS = {
+    "admin": {
+        "password": "1234",
+        "role": "admin"
+    },
+
+    "user": {
+        "password": "12345",
+        "role": "user"
+    }
+}
 
 if "logged_in" not in st.session_state:
     if "last_activity" not in st.session_state:
@@ -84,11 +93,12 @@ if not st.session_state.logged_in:
     if st.sidebar.button("Login"):
 
         if (
-            username == USERNAME
-            and password == PASSWORD
+            username in USERS
+            and USERS[username]["password"] == password
         ):
 
             st.session_state.logged_in = True
+            st.session_state.role = USERS[username]["role"]
             st.session_state.login_attempts = 0
             st.rerun()
 
@@ -135,6 +145,95 @@ st.set_page_config(
 )
 
 st.title("AI Cyber Threat Detection System")
+
+history = pd.read_csv("scan_history.csv")
+
+# ADMIN PANEL
+
+if (
+    st.session_state.role
+    == "admin"
+):
+
+    st.sidebar.markdown("---")
+
+    st.sidebar.subheader(
+        "🛠 Admin Panel"
+    )
+
+    st.sidebar.write(
+        f"Role: {st.session_state.role}"
+    )
+
+    history = pd.read_csv(
+        "scan_history.csv"
+    )
+
+    st.sidebar.write(
+        f"Total Scans: {len(history)}"
+    )
+
+        # THREAT ANALYTICS
+
+    phishing_count = len(
+        history[
+            history["Result"]
+            == "Phishing"
+        ]
+    )
+
+    safe_count = len(
+        history[
+            history["Result"]
+            == "Safe"
+        ]
+    )
+
+    malware_count = len(
+        history[
+            history["Result"]
+            == "Malware"
+        ]
+    )
+
+    st.sidebar.markdown("---")
+
+    st.sidebar.subheader(
+        "📊 Threat Analytics"
+    )
+
+    st.sidebar.write(
+        f"🟢 Safe: {safe_count}"
+    )
+
+    st.sidebar.write(
+        f"🔴 Phishing: {phishing_count}"
+    )
+
+    st.sidebar.write(
+        f"☠ Malware: {malware_count}"
+    )
+
+# USER PANEL
+
+if (
+    st.session_state.role
+    == "user"
+):
+
+    st.sidebar.markdown("---")
+
+    st.sidebar.subheader(
+        "👤 User Panel"
+    )
+
+    st.sidebar.write(
+        f"Role: {st.session_state.role}"
+    )
+
+    st.sidebar.write(
+        "Access: Scan Only"
+    )
 
 st.write("Phishing + Malware Detection Using AI")
 
@@ -199,8 +298,6 @@ if st.button("Check URL"):
 
 
     # SAVE HISTORY
-
-    history = pd.read_csv("scan_history.csv")
 
     current_time = datetime.now().strftime(
         "%Y-%m-%d %H:%M:%S"
@@ -332,22 +429,37 @@ st.dataframe(history_data)
 
 # ---------------- CLEAR HISTORY ---------------- #
 
-if st.button("Clear Scan History"):
+# ADMIN ONLY CLEAR HISTORY
 
-    empty_history = pd.DataFrame(
-        columns=[
-            "Time",
-            "Type",
-            "Input",
-            "Result"
-        ]
-    )
+if (
+    st.session_state.role
+    == "admin"
+):
 
-    empty_history.to_csv(
-        "scan_history.csv",
-        index=False
-    )
+    if st.button(
+        "🗑 Clear History"
+    ):
 
-    st.success(
-        "Scan History Cleared"
+        history = pd.DataFrame(
+            columns=[
+                "Time",
+                "Type",
+                "Input",
+                "Result"
+            ]
+        )
+
+        history.to_csv(
+            "scan_history.csv",
+            index=False
+        )
+
+        st.success(
+            "History Cleared"
+        )
+
+else:
+
+    st.info(
+        "Only Admin can clear history"
     )
