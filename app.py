@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import time
 import streamlit as st
 import pandas as pd
@@ -574,8 +573,7 @@ if (
 else:
 
     st.info(
-        "Only Admin can clear history"
-=======
+        "Only Admin can clear history")
 import time
 import streamlit as st
 import pandas as pd
@@ -1167,6 +1165,4 @@ if (
 else:
 
     st.info(
-        "Only Admin can clear history"
->>>>>>> c314c80b1ba667284dad2bd724f11765b1b8ee1f
-    )
+        "Only Admin can clear history")
