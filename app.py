@@ -7,22 +7,17 @@ from datetime import datetime
 VT_API_KEY = "440148dedf3ca5421ff8b4aaf267d68523173a52740f0f0e187e7095825d1c85"
 
 # ---------------- VIRUSTOTAL SCAN ---------------- #
-
 def virustotal_scan(file):
 
     headers = {
-
         "x-apikey": VT_API_KEY
-
     }
 
     files = {
-
         "file": (
             file.name,
             file.getvalue()
         )
-
     }
 
     upload_url = (
@@ -40,80 +35,74 @@ def virustotal_scan(file):
         response.status_code
     )
 
-    if response.status_code == 200:
+    # Upload fail
+    if response.status_code != 200:
 
-        data = response.json()
-
-        analysis_id = data[
-            "data"
-        ][
-            "id"
-        ]
-
-        time.sleep(8)
-        
-        analysis_url = (
-
-            "https://www.virustotal.com/api/v3/analyses/"
-            + analysis_id
+        return (
+            f"VirusTotal upload failed ({response.status_code})"
         )
 
-        for i in range(10):
+    data = response.json()
 
-            time.sleep(10)
+    analysis_id = data[
+        "data"
+    ][
+        "id"
+    ]
 
-    result_response = requests.get(
-        analysis_url,
-        headers=headers
+    analysis_url = (
+        "https://www.virustotal.com/api/v3/analyses/"
+        + analysis_id
     )
 
-    if result_response.status_code == 200:
+    for i in range(10):
 
-        result_data = (
-            result_response.json()
+        time.sleep(10)
+
+        result_response = requests.get(
+            analysis_url,
+            headers=headers
         )
 
-        status = result_data[
-            "data"
-        ][
-            "attributes"
-        ][
-            "status"
-        ]
+        if result_response.status_code == 200:
 
-        if status == "completed":
+            result_data = (
+                result_response.json()
+            )
 
-            stats = result_data[
+            status = result_data[
                 "data"
             ][
                 "attributes"
             ][
-                "stats"
+                "status"
             ]
 
-            malicious = stats[
-                "malicious"
-            ]
+            if status == "completed":
 
-            total = sum(
-                stats.values()
-            )
+                stats = result_data[
+                    "data"
+                ][
+                    "attributes"
+                ][
+                    "stats"
+                ]
 
-            return (
-                f"{malicious}/{total} engines detected malware"
-            )
+                malicious = stats[
+                    "malicious"
+                ]
 
-        return (
-            "VirusTotal scan still processing"
-            )
+                total = sum(
+                    stats.values()
+                )
 
-        return (
-            f"{malicious}/{total} engines detected malware"
-            )
+                return (
+                    f"{malicious}/{total} engines detected malware"
+                )
 
-        return (
-            "VirusTotal scan failed"
-            )
+    return (
+        "VirusTotal scan still processing"
+    )
 
 
 from phishing_model import (
