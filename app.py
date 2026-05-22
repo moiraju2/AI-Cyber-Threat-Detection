@@ -1,7 +1,120 @@
 import time
 import streamlit as st
 import pandas as pd
+import requests
 from datetime import datetime
+
+VT_API_KEY = "440148dedf3ca5421ff8b4aaf267d68523173a52740f0f0e187e7095825d1c85"
+
+# ---------------- VIRUSTOTAL SCAN ---------------- #
+
+def virustotal_scan(file):
+
+    headers = {
+
+        "x-apikey": VT_API_KEY
+
+    }
+
+    files = {
+
+        "file": (
+            file.name,
+            file.getvalue()
+        )
+
+    }
+
+    upload_url = (
+        "https://www.virustotal.com/api/v3/files"
+    )
+
+    response = requests.post(
+        upload_url,
+        headers=headers,
+        files=files
+    )
+
+    st.write(
+        "VT Upload:",
+        response.status_code
+    )
+
+    if response.status_code == 200:
+
+        data = response.json()
+
+        analysis_id = data[
+            "data"
+        ][
+            "id"
+        ]
+
+        time.sleep(8)
+        
+        analysis_url = (
+
+            "https://www.virustotal.com/api/v3/analyses/"
+            + analysis_id
+        )
+
+        for i in range(10):
+
+            time.sleep(10)
+
+    result_response = requests.get(
+        analysis_url,
+        headers=headers
+    )
+
+    if result_response.status_code == 200:
+
+        result_data = (
+            result_response.json()
+        )
+
+        status = result_data[
+            "data"
+        ][
+            "attributes"
+        ][
+            "status"
+        ]
+
+        if status == "completed":
+
+            stats = result_data[
+                "data"
+            ][
+                "attributes"
+            ][
+                "stats"
+            ]
+
+            malicious = stats[
+                "malicious"
+            ]
+
+            total = sum(
+                stats.values()
+            )
+
+            return (
+                f"{malicious}/{total} engines detected malware"
+            )
+
+        return (
+            "VirusTotal scan still processing"
+            )
+
+        return (
+            f"{malicious}/{total} engines detected malware"
+            )
+
+        return (
+            "VirusTotal scan failed"
+            )
+
 
 from phishing_model import (
     predict_url,
@@ -45,14 +158,14 @@ st.markdown("""
 # ---------------- LOGIN SYSTEM ---------------- #
 
 USERS = {
-    "admin": {
-        "password": "1234",
-        "role": "admin"
+    "RAJU": {
+        "password": "120302",
+        "role": "Admin"
     },
 
-    "user": {
-        "password": "12345",
-        "role": "user"
+    "USER": {
+        "password": "1234",
+        "role": "User"
     }
 }
 
@@ -152,7 +265,7 @@ history = pd.read_csv("scan_history.csv")
 
 if (
     st.session_state.role
-    == "admin"
+    == "Admin"
 ):
 
     st.sidebar.markdown("---")
@@ -218,7 +331,7 @@ if (
 
 if (
     st.session_state.role
-    == "user"
+    == "User"
 ):
 
     st.sidebar.markdown("---")
@@ -307,7 +420,8 @@ if st.button("Check URL"):
         "Time":[current_time],
         "Type":["URL"],
         "Input":[url],
-        "Result":[result]
+        "Result":[result],
+        "VirusTotal":["N/A"]
     })
 
     history = pd.concat(
@@ -366,6 +480,17 @@ if uploaded_files:
         st.write(
             f"SHA256: {file_hash}"
         )
+
+        vt_result = virustotal_scan(
+            uploaded_file
+        )
+
+        st.write(
+        "🦠 VirusTotal:",
+        vt_result
+        )
+        
+        
         
 # PDF REPORT
 
@@ -377,6 +502,7 @@ if uploaded_files:
         File: {uploaded_file.name}
         Risk Score: {risk_score}%
         SHA256: {file_hash}
+        VirusTotal: {vt_result}
         """
     )
 
@@ -402,7 +528,8 @@ if uploaded_files:
             "Time":[current_time],
             "Type":["File"],
             "Input":[uploaded_file.name],
-            "Result":[result]
+            "Result":[result],
+            "VirusTotal":[vt_result]
         })
 
         history = pd.concat(
@@ -433,7 +560,7 @@ st.dataframe(history_data)
 
 if (
     st.session_state.role
-    == "admin"
+    == "Admin"
 ):
 
     if st.button(
@@ -445,7 +572,8 @@ if (
                 "Time",
                 "Type",
                 "Input",
-                "Result"
+                "Result",
+                "VirusTotal"
             ]
         )
 
