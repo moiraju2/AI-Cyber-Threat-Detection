@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -55,7 +54,6 @@ def generate_pdf_report(
         )
     )
 
-=======
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -112,5 +110,4 @@ def generate_pdf_report(
         )
     )
 
->>>>>>> c314c80b1ba667284dad2bd724f11765b1b8ee1f
     pdf.build(content)
