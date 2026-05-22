@@ -1,0 +1,4 @@
+Time,Type,Input,Result,VirusTotal
+2026-05-22 14:44:47,URL,fake-login.com,Phishing,
+2026-05-22 14:45:07,URL,google.com,Safe,
+2026-05-22 14:48:20,File,hello.exe,Safe,3/75 engines detected malware
